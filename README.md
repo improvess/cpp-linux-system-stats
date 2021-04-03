@@ -34,6 +34,17 @@ int main() {
 
 }
 ```
+Expected output:
+
+```
+$ c++ -Iinclude main.cpp
+$ ./a.out 
+CPU usage is 35.9199%
+Swap usage is 31.189%
+Memory usage is 79.6201%
+Disk usage is 67.2953%
+$
+```
 # Why do not use `sysinfo` to get memory consume?
 
 One way to obtain memory usage is via as `sysinfo` follows:
