@@ -102,7 +102,6 @@ namespace get_system_usage_linux
             int begin = start + target.length();
             std::size_t end = content.find("kB", start);
             std::string substr = content.substr(begin, end - begin);
-            std::cout << target << " is " << substr << "\n";
             result = std::stoi(substr);
         }
         return result;
@@ -118,8 +117,6 @@ namespace get_system_usage_linux
             std::string content((std::istreambuf_iterator<char>(proc_meminfo)),
                     std::istreambuf_iterator<char>());
 
-                    std::cout << content << "\n";
-            
             result.total_memory = get_val("MemTotal:", content);
             result.total_swap = get_val("SwapTotal:", content);
             result.free_swap = get_val("SwapFree:", content);
