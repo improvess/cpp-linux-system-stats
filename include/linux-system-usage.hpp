@@ -48,6 +48,26 @@ namespace get_system_usage_linux
         const {
             return user + nice + system + irq + softirq + steal + guest + guest_nice;
         }
+
+    };
+
+    struct Memory_stats
+    {
+        int total_memory;
+        int available_memory;
+        int total_swap;
+        int free_swap;
+
+        float get_memory_usage() {
+            const float result	= static_cast<float>(total_memory - available_memory) / total_memory;
+            return result;
+        }
+
+        float get_swap_usage() {
+            const float result	= static_cast<float>(total_swap - free_swap) / total_swap;
+            return result;
+        }
+
     };
 
     inline CPU_stats read_cpu_data()
@@ -75,43 +95,48 @@ namespace get_system_usage_linux
         return result;
     }
 
+    inline int get_val(const std::string &target, const std::string & content) {
+        int result = -1;
+        std::size_t start = content.find(target);
+        if (start != std::string::npos) {
+            int begin = start + target.length();
+            std::size_t end = content.find("kB", start);
+            std::string substr = content.substr(begin, end - begin);
+            std::cout << target << " is " << substr << "\n";
+            result = std::stoi(substr);
+        }
+        return result;
+    }
+
+    inline Memory_stats read_memory_data()
+    {
+        Memory_stats result;
+        std::ifstream proc_meminfo("/proc/meminfo");
+
+        if (proc_meminfo.good())
+        {
+            std::string content((std::istreambuf_iterator<char>(proc_meminfo)),
+                    std::istreambuf_iterator<char>());
+
+                    std::cout << content << "\n";
+            
+            result.total_memory = get_val("MemTotal:", content);
+            result.total_swap = get_val("SwapTotal:", content);
+            result.free_swap = get_val("SwapFree:", content);
+            result.available_memory = get_val("MemAvailable:", content);
+
+        }
+
+        proc_meminfo.close();
+
+        return result;
+    }
+
     inline float get_cpu_usage(const CPU_stats & first, const CPU_stats & second) {
         const float active_time	= static_cast<float>(second.get_total_active() - first.get_total_active());
 		const float idle_time	= static_cast<float>(second.get_total_idle() - first.get_total_idle());
 		const float total_time	= active_time + idle_time;
         return active_time / total_time;
-    }
-
-    inline float get_virtual_memory_usage() {
-        struct sysinfo memory_info;
-
-        sysinfo (&memory_info);
-        long long total_mem = memory_info.totalram;
-        total_mem += memory_info.totalswap;
-
-        long long mem_used = memory_info.totalram - memory_info.freeram;
-        mem_used += memory_info.totalswap - memory_info.freeswap;
-
-        mem_used *= 1000;
-
-        float result = static_cast<float>(mem_used / total_mem) / 1000.0f;
-
-        return result;
-    }
-
-    inline float get_physical_memory_usage() {
-        struct sysinfo memory_info;
-
-        sysinfo (&memory_info);
-        long long total_mem = memory_info.totalram;
-
-        long long mem_used = memory_info.totalram - memory_info.freeram;
-
-        mem_used *= 1000;
-
-        float result = static_cast<float>(mem_used / total_mem) / 1000.0f;
-
-        return result;
     }
 
 }

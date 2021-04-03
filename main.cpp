@@ -14,8 +14,10 @@ int main() {
 
     std::cout << "CPU usage is " << (100.0f * get_cpu_usage(t1, t2)) << "%\n";
 
-    std::cout << "Virtual memory usage is " << (100.0f * get_virtual_memory_usage()) << "%\n";
+    auto memory_data = read_memory_data();
 
-    std::cout << "Physical memory usage is " << (100.0f * get_physical_memory_usage()) << "%\n";
+    std::cout << "Swap usage is " << (100.0f * memory_data.get_swap_usage()) << "%\n";
+
+    std::cout << "Memory usage is " << (100.0f * memory_data.get_memory_usage()) << "%\n";
 
 }
