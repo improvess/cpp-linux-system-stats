@@ -18,9 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
-#include "sys/types.h"
-#include "sys/sysinfo.h"
+#include <sys/statvfs.h>
 
 namespace get_system_usage_linux
 {
@@ -95,7 +93,7 @@ namespace get_system_usage_linux
         return result;
     }
 
-    inline int get_val(const std::string &target, const std::string & content) {
+    inline int get_val(const std::string &target, const std::string &content) {
         int result = -1;
         std::size_t start = content.find(target);
         if (start != std::string::npos) {
@@ -129,11 +127,25 @@ namespace get_system_usage_linux
         return result;
     }
 
-    inline float get_cpu_usage(const CPU_stats & first, const CPU_stats & second) {
+    inline float get_cpu_usage(const CPU_stats &first, const CPU_stats &second) {
         const float active_time	= static_cast<float>(second.get_total_active() - first.get_total_active());
 		const float idle_time	= static_cast<float>(second.get_total_idle() - first.get_total_idle());
 		const float total_time	= active_time + idle_time;
         return active_time / total_time;
+    }
+
+    inline float get_disk_usage(const std::string & disk) {
+        struct statvfs diskData;
+
+        statvfs(disk.c_str(), &diskData);
+
+        auto total = diskData.f_blocks;
+        auto free = diskData.f_bfree;
+        auto diff = total - free;
+
+        float result = static_cast<float>(diff) / total;
+
+        return result;
     }
 
 }
