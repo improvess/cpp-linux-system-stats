@@ -47,11 +47,11 @@ $
 ```
 # Why do not use `sysinfo` to get memory consume?
 
-One way to obtain memory usage is via as `sysinfo` follows:
+One way to obtain memory usage is via `sysinfo` as follows:
 
 ```c++
 struct sysinfo memory_info;
 sysinfo (&memory_info);
 long long mem_used = memory_info.totalram - memory_info.freeram;
 ```
-The problem is that `freeram` is the amount of real non allocated memory. It turns out that linux caches lots of memory ram which is actually available to be used for any process. However, this cached memory is considered by `sysinfo` as non-free memory and there is no way to measure it  by using only `sysinfo`. For more information about `sysinfo` see: https://man7.org/linux/man-pages/man2/sysinfo.2.html
+The problem with this approach is that `freeram` represents the real amount of non-allocated memory. It turns out that linux systems cache lots of memory ram which is actually available to be used for any process. However, this cached memory is considered by `sysinfo` as non-free memory. Since there is no way to measure the cached memory using only `sysinfo` I ended up by extracting memory usage from `/proc/meminfo`. For more information about `sysinfo` see: https://man7.org/linux/man-pages/man2/sysinfo.2.html
