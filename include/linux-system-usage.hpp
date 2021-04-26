@@ -148,6 +148,28 @@ namespace get_system_usage_linux
         return result;
     }
 
+    //see https://unix.stackexchange.com/questions/304845/discrepancy-between-number-of-cores-and-thermal-zones-in-sys-class-thermal/342023
+
+    inline int get_thermalzone_temperature(int thermal_index) {
+        int result = -1;
+        std::ifstream thermal_file("/sys/class/thermal/thermal_zone" + std::to_string(thermal_index) + "/temp");
+
+        if (thermal_file.good())
+        {
+            std::string line;
+            getline(thermal_file, line);
+
+            std::stringstream iss(line);
+            iss >> result;
+        } else {
+            throw std::invalid_argument(std::to_string(thermal_index) + " doesn't refer to a valid thermal zone.");
+        }
+
+        thermal_file.close();
+
+        return result;
+    }
+
 }
 
 #endif
