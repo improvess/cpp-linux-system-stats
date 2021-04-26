@@ -1,6 +1,6 @@
 # cpp-linux-system-stats
 
-Single-header, straight-forward API to read CPU, Memory &amp; Disk usage for linux systems. The data are extracted respectively from `/proc/stat`, `/proc/meminfo` and `statvfs`.
+Single-header, straight-forward API to read CPU, Memory, thermal zone temperature &amp; Disk usage for linux systems. The data are extracted respectively from `/proc/stat`, `/proc/meminfo` and `statvfs`.
 
 # Example
 
@@ -21,6 +21,12 @@ int main() {
     CPU_stats t2 = read_cpu_data();
 
     std::cout << "CPU usage is " << (100.0f * get_cpu_usage(t1, t2)) << "%\n";
+    
+    //see https://unix.stackexchange.com/questions/304845/discrepancy-between-number-of-cores-and-thermal-zones-in-sys-class-thermal/342023 to realize the correct index for your CPU
+    const int cpu_thermal_zone = 2;
+    int cpu_temp = get_thermalzone_temperature(cpu_thermal_zone);
+    
+    std::cout << "CPU temperature is " << (cpu_temp / 1000) << "°C\n";
 
     // Memory usage
     auto memory_data = read_memory_data();
