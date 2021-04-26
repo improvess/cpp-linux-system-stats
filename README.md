@@ -46,6 +46,7 @@ Expected output:
 $ c++ -Iinclude main.cpp
 $ ./a.out 
 CPU usage is 35.9199%
+CPU temperature is 42°C
 Swap usage is 31.189%
 Memory usage is 79.6201%
 Disk usage is 67.2953%
