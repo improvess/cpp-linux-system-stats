@@ -150,6 +150,32 @@ namespace get_system_usage_linux
 
     //see https://unix.stackexchange.com/questions/304845/discrepancy-between-number-of-cores-and-thermal-zones-in-sys-class-thermal/342023
 
+    inline int find_thermalzone_index() {
+        int result = 0;
+        bool stop = false;
+        // 20 must stop anyway
+        for (int i = 0; !stop && i < 20; ++i) {
+            std::ifstream thermal_file("/sys/class/thermal/thermal_zone" + std::to_string(i) + "/type");
+
+            if (thermal_file.good())
+            {
+                std::string line;
+                getline(thermal_file, line);
+
+                if (line.compare("x86_pkg_temp") == 0) {
+                    result = i;
+                    stop = true;
+                }
+
+            } else {
+                stop = true;
+            }
+
+            thermal_file.close();
+        }
+        return result;
+    }
+
     inline int get_thermalzone_temperature(int thermal_index) {
         int result = -1;
         std::ifstream thermal_file("/sys/class/thermal/thermal_zone" + std::to_string(thermal_index) + "/temp");
